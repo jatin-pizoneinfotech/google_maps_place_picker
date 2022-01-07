@@ -43,11 +43,12 @@ class PlaceProvider extends ChangeNotifier {
   LocationAccuracy? desiredAccuracy;
   bool isAutoCompleteSearching = false;
 
-  Future<void> updateCurrentLocation(bool forceAndroidLocationManager) async {
+  Future<void> updateCurrentLocation(bool forceAndroidLocationManager, Duration? timeLimit) async {
     try {
       await Permission.location.request();
       if (await Permission.location.request().isGranted) {
         currentPosition = await Geolocator.getCurrentPosition(
+            timeLimit: timeLimit,
             desiredAccuracy: desiredAccuracy ?? LocationAccuracy.best);
       } else {
         currentPosition = null;

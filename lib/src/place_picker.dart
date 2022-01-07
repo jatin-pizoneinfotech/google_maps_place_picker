@@ -61,6 +61,7 @@ class PlacePicker extends StatefulWidget {
     this.automaticallyImplyAppBarLeading = true,
     this.autocompleteOnTrailingWhitespace = false,
     this.hidePlaceDetailsWhenDraggingPin = true,
+    this.locationTimeout,
   }) : super(key: key);
 
   final String apiKey;
@@ -165,6 +166,8 @@ class PlacePicker extends StatefulWidget {
   final bool autocompleteOnTrailingWhitespace;
 
   final bool hidePlaceDetailsWhenDraggingPin;
+
+  final Duration ?locationTimeout;
 
   @override
   _PlacePickerState createState() => _PlacePickerState();
@@ -362,7 +365,7 @@ class _PlacePickerState extends State<PlacePicker> {
   Widget _buildMapWithLocation() {
     if (widget.useCurrentLocation != null && widget.useCurrentLocation!) {
       return FutureBuilder(
-          future: provider!.updateCurrentLocation(widget.forceAndroidLocationManager),
+          future: provider!.updateCurrentLocation(widget.forceAndroidLocationManager, widget.locationTimeout),
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -415,7 +418,7 @@ class _PlacePickerState extends State<PlacePicker> {
           Timer(Duration(seconds: widget.myLocationButtonCooldown), () {
             provider!.isOnUpdateLocationCooldown = false;
           });
-          await provider!.updateCurrentLocation(widget.forceAndroidLocationManager);
+          await provider!.updateCurrentLocation(widget.forceAndroidLocationManager, widget.locationTimeout);
           await _moveToCurrentPosition();
         }
       },
